@@ -1,0 +1,289 @@
+An Automated Design Flow from Synchronous RTL to Optimized Layout using Commercial
+EDA Tools for Multi-Threshold NULL Convention Logic Circuits
+A dissertation submitted in partial fulfillment
+of the requirements for the degree of
+Doctor of Philosophy in Computer Engineering
+by
+Cole Harrington Sherrill
+University of Arkansas
+Bachelor of Science in Computer Engineering, 2019
+University of Arkansas
+Master of Science in Computer Engineering, 2022
+December 2024
+University of Arkansas
+This dissertation is approved for recommendation to the Graduate Council.
+__________________________________
+Jia Di, Ph.D.
+Dissertation Director
+__________________________________ ___________________________________
+Alexander Nelson, Ph.D. David Andrews, Ph.D.
+Committee Member Committee Member
+__________________________________
+Zhong Chen, Ph.D.
+Committee Member
+
+ABSTRACT
+This work presents the first automated design flow from synchronous RTL to highly
+optimized layout for Multi-Threshold NULL Convention Logic (MTNCL) circuits. The
+developed synthesis flow overcomes many of the drawbacks of existing attempts and leverages
+the advanced optimization features provided by modern synthesis tools. The remaining timing
+race conditions native to the MTNCL architecture have been identified and thoroughly explored.
+Two sets of novel timing constraints were devised: the first responds to these race conditions,
+yielding highly reliable MTNCL circuits; the second directly targets the critical paths within
+MTNCL circuits, allowing the designer to optimize the target circuit for high performance, low
+power, or some tradeoff between the two. To demonstrate the advantages of the proposed flow
+and timing constraints, a large set of circuits—including 64-bit adders, 32×32 Montgomery
+modular multipliers, and AES-256 cores—was developed in the TSMC 65nm technology.
+Following physical implementation and R+C parasitic extraction, each circuit was simulated at
+transistor level to provide the highest accuracy evaluations possible. Results range from 140%
+higher throughput for high-performance circuits to 28.6% less active energy per operation,
+42.9% less static power consumption, and 29.6% less area for circuits targeting low-power
+operation. The circuits developed with the proposed design flow are arguably the most reliable
+and highest quality MTNCL circuits to date. These results indicate that when MTNCL designs
+leverage the same tools ubiquitous to synchronous circuit design, they can simultaneously
+achieve significantly higher performance, greater active energy efficiency, lower static power
+consumption, and smaller design area compared to previous attempts.
+
+ACKNOWLEDGEMENTS
+First and foremost, I would like to thank my advisor, Dr. Jia Di, for extending the
+opportunity to join the TruLogic research lab in the 2nd year of my undergraduate studies and
+subsequent Graduate Research Assistantship. Without Dr. Di, I would have likely completed my
+B.S. and pursued a personally mundane career in the software industry. The knowledge and
+experience I have gained through our discussions, your classes, and my time in the lab will
+remain invaluable. The environment you developed within your lab contributed to an enjoyable
+graduate school experience. The research projects I have contributed to during my time in the lab
+have been intriguing and engaging, and I will continue to appreciate asynchronous circuit design
+throughout the remainder of my career.
+I would also like to express gratitude to my other committee members, Dr. David Andrews,
+Dr. Alexander Nelson, and Dr. Zhong Chen for their guidance on this dissertation research,
+especially for the insightful questions and recommendations provided during my proposal.
+I would like to thank my entire family, especially my parents, for their unwavering
+encouragement throughout my time in college. Their prioritization of my education and the
+motivation they instilled in me to excel are the bedrock of my achievements thus far.
+My time in graduate school would not have been the same without those who walked the
+path with me—Richard Becker, Wassim Khalil, Mark Howard, Kelby Haulmark, Andrew
+Felder, and many others too numerous to name. Our time working together at CSRC and the
+countless activities outside of work are among my favorite memories from graduate school. I
+would also like to give a special shout out to Michael Tennant for the structural MTNCL AES-
+256 core VHDL. Its elegant design saved me many hours of work, and its S-box served as the
+
+template for the one used in the synthesis of the low-power AES-256 cores. Finally, this
+dissertation benefitted markedly from Kelby’s editing and suggestions.
+
+TABLE OF CONTENTS
+1. INTRODUCTION ................................................................................................................. 1
+2. BACKGROUND .................................................................................................................... 3
+2.1 Circuit Synthesis ............................................................................................................ 3
+2.2 Placement and Routing .................................................................................................. 6
+2.3 NULL Convention Logic (NCL) ................................................................................... 8
+2.4 Multi-Threshold NULL Convention Logic (MTNCL) ................................................ 12
+2.5 MTNCL Timing Sensitivity ......................................................................................... 20
+2.6 Previous Work on Synthesizing NCL .......................................................................... 28
+2.7 Previous Work on Synthesizing MTNCL .................................................................... 34
+3. MTNCL RTL-TO-GDS FLOW ......................................................................................... 38
+3.1 Library Preparation ...................................................................................................... 38
+3.2 MTNCL Synthesis Flow .............................................................................................. 41
+3.2.1 Single-rail Synthesis .......................................................................................... 42
+3.2.2 Dual-rail Expansion ........................................................................................... 43
+3.2.3 Dual-rail Synthesis ............................................................................................. 43
+3.2.4 Registration and Handshaking Connection........................................................ 47
+3.3 MTNCL Timing Constraints ........................................................................................ 47
+3.3.1 MTNCL Timing Constraints for Reliability ...................................................... 50
+3.3.2 MTNCL Timing Constraints for Optimization .................................................. 56
+4. EVALUATION SETUP ...................................................................................................... 61
+4.1 Library Preparation ...................................................................................................... 61
+4.2 Physical Implementation .............................................................................................. 62
+
+4.3 Timing Closure Approach ............................................................................................ 65
+4.4 Data Collection Strategy .............................................................................................. 67
+4.5 Evaluation Circuit Categories ...................................................................................... 68
+5. RESULTS AND ANALYSIS .............................................................................................. 72
+5.1 Adders .......................................................................................................................... 73
+5.1.1 Architecture ....................................................................................................... 73
+5.1.2 Low Power ......................................................................................................... 74
+5.1.2.1 Implementation ........................................................................................ 74
+5.1.2.2 Structural vs. Synthesized ........................................................................ 77
+5.1.2.3 Synthesized vs. Optimized ....................................................................... 84
+5.1.2.4 Summary .................................................................................................. 89
+5.1.3 High Performance .............................................................................................. 91
+5.1.3.1 Implementation ........................................................................................ 91
+5.1.3.2 Structural vs. Synthesized ........................................................................ 94
+5.1.3.3 Synthesized vs. Optimized ..................................................................... 105
+5.1.3.4 Summary ................................................................................................ 110
+5.2 Montgomery Modular Multipliers ............................................................................. 114
+5.2.1 Architecture ..................................................................................................... 114
+5.2.2 Low Power ....................................................................................................... 116
+5.2.2.1 Implementation ...................................................................................... 116
+5.2.2.2 Structural vs. Synthesized ...................................................................... 118
+5.2.2.3 Synthesized vs. Optimized ..................................................................... 122
+5.2.2.4 Summary ................................................................................................ 125
+
+5.2.3 High Performance ............................................................................................ 126
+5.2.3.1 Implementation ...................................................................................... 126
+5.2.3.2 Structural vs. Synthesized ...................................................................... 128
+5.2.3.3 Synthesized vs. Optimized ..................................................................... 132
+5.2.3.4 Higher Pipeline Granularity ................................................................... 137
+5.2.3.5 Summary ................................................................................................ 146
+5.3 AES-256 Cores .......................................................................................................... 147
+5.3.1 Architecture ..................................................................................................... 147
+5.3.2 Low Power ....................................................................................................... 151
+5.3.2.1 Implementation ...................................................................................... 151
+5.3.2.2 Structural vs. Synthesized ...................................................................... 153
+5.3.2.3 Synthesized vs. Optimized ..................................................................... 157
+5.3.2.4 Summary ................................................................................................ 161
+5.3.3 High Performance ............................................................................................ 162
+5.3.3.1 Implementation ...................................................................................... 162
+5.3.3.2 Structural vs. Synthesized ...................................................................... 164
+5.3.3.3 Synthesized vs. Optimized ..................................................................... 168
+5.3.3.4 Summary ................................................................................................ 171
+5.4 Performance Estimation ............................................................................................. 173
+5.5 Reliability ................................................................................................................... 175
+6. CONCLUSIONS ................................................................................................................ 178
+6.1 Summary .................................................................................................................... 178
+6.2 Pitfalls ........................................................................................................................ 180
+
+6.3 Future Work ............................................................................................................... 182
+7. REFERENCES .................................................................................................................. 186
+
+LIST OF TABLES
+Table 1: Dual-rail Encoding ............................................................................................................ 8
+Table 2: Threshold Gates and Transistor Count [8] ....................................................................... 9
+Table 3: Propagation Delays for an MTNCL TH12 Cell ............................................................. 17
+Table 4: Classification and Implication of MTNCL Timing Assumptions .................................. 21
+Table 5: Buffers Utilized for Structural Circuits .......................................................................... 69
+Table 6: Structural vs. Synthesized Low-power Adder Metrics ................................................... 77
+Table 7: Structural Low-power Adder Cell Composition............................................................. 81
+Table 8: Synthesized Low-power Adder Cell Composition ......................................................... 81
+Table 9: Synthesized vs. Optimized Low-power Adder Metrics .................................................. 85
+Table 10: Optimized Low-power Adder Cell Composition ......................................................... 88
+Table 11: Structural vs. Optimized Low-power Adder Metrics ................................................... 89
+Table 12: Structural vs. Synthesized High-performance Adder Metrics ...................................... 95
+Table 13: Structural High-performance Adder Composition and Switching Activity ............... 102
+Table 14: Synthesized High-performance Adder Composition and Switching Activity ............ 103
+Table 15: Synthesized vs. Optimized High-performance Adder Metrics ................................... 106
+Table 16: Optimized High-performance Adder Composition and Switching Activity .............. 109
+Table 17: Structural vs. Optimized High-performance Adder Metrics ...................................... 110
+Table 18: Structural vs. Synthesized Low-power Multiplier Metrics ......................................... 119
+Table 19: Structural Low-power Multiplier Composition and Switching Activity .................... 121
+Table 20: Synthesized Low-power Multiplier Composition and Switching Activity ................ 121
+Table 21: Synthesized vs. Optimized Low-power Multplier Metrics ......................................... 123
+Table 22: Optimized Low-power Multiplier Composition and Switching Activity ................... 124
+
+Table 23: Structural vs. Optimized Low-power Multiplier Metrics ........................................... 125
+Table 24: Structural vs. Synthesized High-performance Multiplier Metrics .............................. 129
+Table 25: Structural vs. Synthesized High-performance Multiplier Stage Delays ..................... 130
+Table 26: Structural High-performance Multiplier Composition and Switching Activity ......... 131
+Table 27: Synthesized High-performance Multiplier Composition and Switching Activity ..... 131
+Table 28: Synthesized vs. Optimized High-performance Multiplier Metrics ............................. 133
+Table 29: Synthesized vs. Optimized High-performance Multiplier Stage Delays .................... 134
+Table 30: Optimized High-performance Multiplier Composition and Switching Activity ........ 135
+Table 31: 4-stage vs. 8-stage Synthesized High-performance Multiplier Metrics ..................... 138
+Table 32: Synthesized 8-stage High-performance Multiplier Composition and Switching Activity
+..................................................................................................................................................... 140
+Table 33: 4-stage vs. 8-stage Optimized High-performance Multiplier Metrics ........................ 142
+Table 34: 4-stage vs. 8-stage Optimized High-performance Multiplier Stage Delays ............... 143
+Table 35: 4-stage vs. 8-stage High-performance Multiplier DATA Cycle Breakdown ............. 146
+Table 36: Structural vs. Optimized High-performance Multiplier Metrics ................................ 146
+Table 37: Structural vs. Synthesized Low-power AES Core Metrics ........................................ 154
+Table 38: Structural vs. Synthesized Low-power AES Core DATA Cycle Breakdown ............ 155
+Table 39: Structural Low-power AES Core Composition and Switching Activity .................... 156
+Table 40: Synthesized Low-power AES Core Composition and Switching Activity ................ 156
+Table 41: Synthesized vs. Optimized Low-power AES Core Metrics ....................................... 158
+Table 42: Synthesized vs. Optimized Low-power AES Core DATA Cycle Breakdown ........... 159
+Table 43: Optimized Low-power AES Core Composition and Switching Activity ................... 160
+Table 44: Structural vs. Optimized Low-power AES Core Metrics ........................................... 161
+
+Table 45: Low-power vs. High-performance AES Core Logic Depth ....................................... 163
+Table 46: Structural vs. Synthesized High-performance AES Core Metrics .............................. 165
+Table 47: Structural vs. Synthesized High-performance AES Core DATA Cycle Breakdown . 166
+Table 48: Structural High-performance AES Core Composition and Switching Activity ......... 167
+Table 49: Synthesized High-performance AES Core Composition and Switching Activity ..... 167
+Table 50: Synthesized vs. Optimized High-performance AES Core Metrics ............................ 169
+Table 51: Synthesized vs. Optimized High-performance AES Core DATA Cycle Breakdown 170
+Table 52: Synthesized vs. Optimized High-performance AES Core Buffer Delay .................... 170
+Table 53: Optimized High-performance AES Core Composition and Switching Activity ........ 171
+Table 54: Structural vs. Optimized High-performance AES Core Metrics ................................ 171
+Table 55: Predicted vs. Measured Optimized Design Throughput ............................................. 173
+Table 56: Required Testbench Assignment Delays .................................................................... 176
+
+LIST OF FIGURES
+Figure 1: Unbalanced Pipeline ........................................................................................................ 5
+Figure 2: Balanced Pipeline after Register Retiming ..................................................................... 5
+Figure 3: NCL TH23 Gate ............................................................................................................ 10
+Figure 4: NCL Pipeline Architecture ............................................................................................ 11
+Figure 5: MTNCL TH23 Gate ...................................................................................................... 13
+Figure 6: MTNCL Pipeline Architecture ...................................................................................... 14
+Figure 7: MTNCL Completion Detection Structure ..................................................................... 15
+Figure 8: MTNCL Register Cell ................................................................................................... 15
+Figure 9: First Ko Subcycle Path .................................................................................................. 18
+Figure 10: Second Ko Subcycle Path ............................................................................................ 19
+Figure 11: DATA Completion Race Condition ............................................................................ 22
+Figure 12: DATA Handshaking Race Condition .......................................................................... 23
+Figure 13: Transistor-level Demonstration of DATA Handshaking Race Condition .................. 23
+Figure 14: NULL Completion Race Condition ............................................................................ 26
+Figure 15: NULL Handshaking Race Condition .......................................................................... 27
+Figure 16: General NCL and MTNCL Synthesis Flow ................................................................ 30
+Figure 17: Boolean Single-rail Full Adder ................................................................................... 31
+Figure 18: Boolean Dual-rail Full Adder ...................................................................................... 32
+Figure 19: MTNCL Synthesis Flow ............................................................................................. 42
+Figure 20: Structural Completion Detection ................................................................................. 45
+Figure 21: Synthesized Completion Detection ............................................................................. 45
+Figure 22: MTNCL Architecture Combinational Feedback Loops .............................................. 49
+
+Figure 23: SDC Command for Breaking Timing Loops .............................................................. 49
+Figure 24: MTNCL DATA Completion Timing Constraint Paths ............................................... 51
+Figure 25: MTNCL DATA Completion Timing Constraints ....................................................... 51
+Figure 26: MTNCL DATA Handshaking Timing Constraint Paths ............................................. 53
+Figure 27: MTNCL DATA Handshaking Timing Constraints ..................................................... 53
+Figure 28: MTNCL NULL Completion Timing Constraint Paths ............................................... 54
+Figure 29: MTNCL NULL Completion Timing Constraints ....................................................... 54
+Figure 30: MTNCL NULL Handshaking Timing Constraint Paths ............................................. 55
+Figure 31: MTNCL NULL Handshaking Timing Constraints ..................................................... 55
+Figure 32: MTNCL DATA Cycle Constraint ............................................................................... 58
+Figure 33: MTNCL Performance-related I/O Constraint Paths .................................................... 59
+Figure 34: MTNCL Performance-related I/O Constraints ............................................................ 59
+Figure 35: 64-bit Adder Circuit Architecture ............................................................................... 73
+Figure 36: Structural RCA Layout ................................................................................................ 74
+Figure 37: Synthesized Adder Carry Chain .................................................................................. 76
+Figure 38: Synthesized Low-power Adder Layout ....................................................................... 77
+Figure 39: Structural Low-power Adder Average DATA Cycle Path ......................................... 79
+Figure 40: Synthesized Low-power Adder Average DATA Cycle Path ...................................... 79
+Figure 41: Optimized Low-power Adder Layout ......................................................................... 84
+Figure 42: Optimized Low-power Adder Average DATA Cycle Path ........................................ 86
+Figure 43: Structural CLA Layout ................................................................................................ 91
+Figure 44: Synthesized High-performance Adder Logic Depth ................................................... 93
+Figure 45: Synthesized High-performance Adder Layout ............................................................ 94
+
+Figure 46: Structural High-performance Adder Max DATA Cycle Path ..................................... 96
+Figure 47: Synthesized High-performance Adder Max DATA Cycle Path ................................. 97
+Figure 48: Structural High-performance Adder Min DATA Cycle Path ..................................... 98
+Figure 49: Structural High-performance Adder Ki-to-out Path .................................................... 99
+Figure 50: Synthesized High-performance Adder Ki-to-out Path ................................................ 99
+Figure 51: Structural High-performance Adder Max NULL Cycle Path ................................... 100
+Figure 52: Synthesized High-performance Adder Max NULL Cycle Path ................................ 101
+Figure 53: Optimized High-performance Adder Layout ............................................................ 105
+Figure 54: Optimized High-performance Adder Max DATA Cycle Path .................................. 108
+Figure 55: Structural High-performance Adder DATA Handshaking Hazard Path 1 ................ 112
+Figure 56: Structural High-performance Adder DATA Handshaking Hazard Path 2 ................ 112
+Figure 57: Optimized High-performance Adder DATA Handshaking Safeguard Path 1 .......... 113
+Figure 58: Optimized High-performance Adder DATA Handshaking Safeguard Path 2 .......... 113
+Figure 59: 32×32 Montgomery Modular Multiplier Circuit Architecture .................................. 114
+Figure 60: Structural Low-power Multiplier Layout .................................................................. 116
+Figure 61: Synthesized Low-power Multiplier Layout .............................................................. 118
+Figure 62: Optimized Low-power Multiplier Layout ................................................................. 122
+Figure 63: Structural High-performance Multiplier Layout ....................................................... 126
+Figure 64: Synthesized High-performance Multiplier Layout .................................................... 128
+Figure 65: Optimized High-performance Multiplier Layout ...................................................... 132
+Figure 66: Synthesized 8-stage High-performance Multiplier Layout ....................................... 137
+Figure 67: Optimized 8-stage High-performance Multiplier Layout ......................................... 141
+Figure 68: Optimized 4-stage High-performance Multiplier Max DATA Cycle Path ............... 144
+
+Figure 69: Optimized 8-stage High-performance Multiplier Max DATA Cycle Path ............... 145
+Figure 70: AES-256 Core Architecture ...................................................................................... 147
+Figure 71: Structural Low-power AES Core Layout .................................................................. 151
+Figure 72: Synthesized Low-power AES Core Layout .............................................................. 153
+Figure 73: Optimized Low-power AES Core Layout ................................................................. 157
+Figure 74: Structural High-performance AES Core Layout ....................................................... 162
+Figure 75: Synthesized High-performance AES Core Layout ................................................... 164
+Figure 76: Optimized High-performance AES Core Layout ...................................................... 168
+

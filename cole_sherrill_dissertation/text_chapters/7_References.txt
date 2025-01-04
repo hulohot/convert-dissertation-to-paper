@@ -1,0 +1,119 @@
+7. REFERENCES
+[1] S. Smith and J. Di, Designing Asynchronous Circuits Using NULL Convention Logic
+(NCL), 1st ed., Springer, 2022.
+[2] L. Zhou, R. Parameswaran, F. A. Parsan, S. C. Smith and J. Di, "Multi-Threshold NULL
+Convention Logic (MTNCL): An Ultra-Low Power Asynchronous Circuit Design
+Methodology," Journal of Low Power Electronics and Applications, vol. 5, no. 2, pp. 81-
+100, 2015.
+[3] D. Gregory, K. Bartlett, A. de Geus and G. Hachtel, "SOCRATES: A System for
+Automatically Synthesizing and Optimizing Combinational Logic," in 23rd ACM/IEEE
+Design Automation Conference, Las Vegas, NV, USA, 1986.
+[4] B. Parhami, Computer arithmetic : algorithms and hardware designs, New York: Oxford
+University Press, 2000.
+[5] "Genus User Guide, Version 23.1," Cadence Design Systems, Inc., 2024.
+[6] R. Ho, K. Mai and M. Horowitz, "Managing wire scaling: a circuit perspective," in IEEE
+2003 International Interconnect Technology Conference, Burlingame, CA, USA, 2003.
+[7] C. J. Alpert, C. Chu and P. G. Villarrubia, "The coming of age of physical synthesis," in
+2007 IEEE/ACM International Conference on Computer-Aided Design, San Jose, CA,
+USA, 2007.
+[8] B. Bell, Efficacy of Multi-Threshold NULL Convention Logic in Low-Power Applications,
+Fayetteville, AR: University of Arkansas, 2018.
+[9] A. L. Sobczyk, A. W. Luczyk and W. A. Pleskacz, "Power Dissipation in Basic Global
+Clock Distribution Networks," in 2007 IEEE Design and Diagnostics of Electronic
+Circuits and Systems, Krakow, Poland, 2007.
+[10] C. Sherrill, M. Tennant and J. Di, "Reducing Power Consumption in Asynchronous
+MTNCL Circuits through Selective Sleep," in 2020 IEEE 63rd International Midwest
+Symposium on Circuits and Systems (MWSCAS), Springfield, MA, USA, 2020.
+[11] C. Sherrill, K. Orman, N. Brown and J. Di, "Case Study for Skewing MTNCL Circuits," in
+2023 28th IEEE International Symposium on Asynchronous Circuits and Systems
+(ASYNC), Beijing, China, 2023.
+[12] A. Smirnov, A. Taubin, M. Su and M. Karpovsky, "An automated fine-grain pipelining
+using domino style asynchronous library," in Fifth International Conference on
+Application of Concurrency to System Design (ACSD'05), Saint Malo, France, 2005.
+186
+
+[13] P. Palangpour, CAD Tools for Synthesis of Sleep Convention Logic, Fayetteville, AR:
+University of Arkansas, 2013.
+[14] R. A. Guazzelli, W. L. Neto, M. T. Moreira and N. L. V. Calazans, "Sleep convention logic
+isochronic fork: An analysis," in 2017 30th Symposium on Integrated Circuits and Systems
+Design (SBCCI), Fortaleza, Brazil, 2017.
+[15] N. R. Mize, Asynchronous Circuit Synthesis Using Multi-Threshold NULL Convention
+Logic, Fayetteville, AR: University of Arkansas, 2019.
+[16] A. J. Martin, "A program transformation approach to asynchronous VLSI design," in
+Proceedings of the NATO Advanced Study Institute on Deductive program design,
+Marktoberdorf, Germany, 1996.
+[17] S. Ataei, W. Hua, Y. Yang, R. Manohar, Y.-S. Lu, J. He, S. Maleki and K. Pingali, "An
+Open-Source EDA Flow for Asynchronous Logic," IEEE Design & Test, vol. 38, no. 2, pp.
+27-37, April 2021.
+[18] J. Kessels and A. Peeters, "The Tangram framework: asynchronous circuits for low
+power," in Proceedings of the ASP-DAC 2001. Asia and South Pacific Design Automation
+Conference 2001, Yokohama, Japan, 2001.
+[19] A. Bardsley and D. Edwards, "Compiling the language Balsa to delay insensitive
+hardware," in CHDL'97, Toledo, Spain, 1997.
+[20] A. Bardsley and D. A. Edwards, "The Balsa Asynchronous Circuit Synthesis System,"
+2000. [Online]. Available: https://apt.cs.manchester.ac.uk/ftp/pub/apt/papers/FDL00.pdf.
+[21] D. H. Linder and J. C. Harden, "Phased Logic: Supporting the Synchronous Design
+Paradigm with Delay-Insensitive Circuitry," IEEE Transactions on Computers, vol. 45, no.
+9, pp. 1031-1044, September 1996.
+[22] J. Cortadella, A. Kondratyev, L. Lavagno and C. P. Sotiriou, "Desynchronization:
+Synthesis of Asynchronous Circuits From Synchronous Specifications," IEEE
+Transactions on Computer-Aided Design of Integrated Circuits and Systems, vol. 25, no.
+10, pp. 1904-1921, October 2006.
+[23] P. A. Beerel, G. D. Dimou and A. M. Lines, "Proteus: An ASIC Flow for GHz
+Asynchronous Designs," IEEE Design & Test of Computers, vol. 28, no. 5, pp. 36-51,
+September 2011.
+[24] J. Cortadella, "Petrify: a tutorial for the designer of asynchronous circuits," [Online].
+Available: https://www.cs.unc.edu/~montek/teaching/fall-07/lectures/petrify-tutorial.pdf.
+187
+
+[25] H. Jacobson, E. Brunvand, G. Gopalakrishnan and P. Kudva, "High-Level Asynchronous
+System Design using the ACK Framework," in Proceedings Sixth International Symposium
+on Advanced Research in Asynchronous Circuits and Systems (ASYNC 2000), Eilat, Israel,
+2000.
+[26] R. Manohar, "An Open Source Design Flow for Asynchronous Circuits," [Online].
+Available: https://csl.yale.edu/~rajit/ps/gomactech2019.pdf.
+[27] "PrimeLib User Guide, Version V-2023.12," Synopsys, Inc., 2023.
+[28] D. Hand, A. Katzin and W. Koven, "Adding Conditionality to Resilient Bundled-Data
+Designs," in 2016 22nd IEEE International Symposium on Asynchronous Circuits and
+Systems (ASYNC), Porto Alegre, Brazil, 2016.
+[29] A. Kondratyev and K. Lwin, "Design of asynchronous circuits by synchronous CAD
+tools," in Proceedings 2002 Design Automation Conference, New Orleans, LA, USA,
+2002.
+[30] M. Ligthart, K. Fant, R. Smith, A. Taubin and A. Kondratyev, "Asynchronous design using
+commercial HDL synthesis tools," in Proceedings Sixth International Symposium on
+Advanced Research in Asynchronous Circuits and Systems (ASYNC 2000), Eilat, Israel,
+2000.
+[31] R. B. Reese, S. C. Smith and M. A. Thornton, "Uncle - An RTL Approach to
+Asynchronous Design," in 2012 IEEE 18th International Symposium on Asynchronous
+Circuits and Systems, Kgs. Lyngby, Denmark, 2012.
+[32] M. T. Moreira, P. A. Beerel, M. L. L. Sartori and N. L. V. Calazans, "NCL Synthesis With
+Conventional EDA Tools: Technology Mapping and Optimization," IEEE Transactions on
+Circuits and Systems I: Regular Papers, vol. 65, no. 6, pp. 1981-1993, June 2018.
+[33] V. M. Pillai, CAD Tool Design for NCL and MTNCL Asynchronous Circuits, Fayetteville,
+AR: University of Arkansas, 2013.
+[34] M. Prakash, Library Characterization and Static Timing Analysis of Asynchronous
+Circuits, Los Angeles, CA: University of Southern California, 2007.
+[35] "Innovus Stylus Common UI User Guide, Version 23.1," January 2024. [Online].
+Available: support.cadence.com.
+[36] D. Soni, M. Nabeel, H. Gamil, O. Mazonka, B. Reagen, R. Karri and M. Maniatakos,
+"Design Space Exploration of Modular Multipliers for ASIC FHE accelerators," in 2023
+24th International Symposium on Quality Electronic Design (ISQED), San Francisco, CA,
+USA, 2023.
+188
+
+[37] H. Zhou, C. Liu, L. Yang, L. Shang and F. Yang, "A Fully Pipelined Reconfigurable
+Montgomery Modular Multiplier Supporting Variable Bit-Widths," IEEE Transactions on
+Computer-Aided Design of Integrated Circuits and Systems, 2024.
+[38] National Institute of Standards and Technology, "Advanced Encryption Standard (AES)," 9
+May 2023. [Online]. Available: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197-
+upd1.pdf.
+[39] A. W. Burks, H. H. Goldstine and J. von Neumann, "Preliminary Discussion of the Logical
+Design of an Electronic Computing Instrument," in The Origins of Digital Computers:
+Selected Papers, Berlin, Heidelberg, Springer, 1982, pp. 399-413.
+[40] T. Ruschival, "Avalon AES ECB-Core (128, 192, 256 Bit)," OpenCores.org, [Online].
+Available: https://opencores.org/projects/avs_aes.
+[41] J. Wolkerstorfer, E. Oswald and M. Lamberger, "An ASIC Implementation of the AES
+SBoxes," in Proceedings of The Cryptographers' Track at RSA Conference, San Jose, CA,
+2002.
+189
+
